@@ -1,0 +1,32 @@
+// ============================================================
+// kiwi1p5.cst – Pin Constraints cho bài thi Watchdog Monitor
+// Dựa trên kiwi-1p5-schematic.pdf v1.1
+// ============================================================
+
+// Clock 27MHz (IOL6A = pin 4)
+IO_LOC "clk"          4;
+IO_PORT "clk"         PULL_MODE=NONE IO_TYPE=LVCMOS33;
+
+// Button S1 = WDI kick (IOR1B = pin 35, active-low, pull-up sẵn trên board)
+IO_LOC "wdi_n"        35;
+IO_PORT "wdi_n"       PULL_MODE=UP IO_TYPE=LVCMOS33;
+
+// Button S2 = EN (IOR1A = pin 36, active-low, pull-up sẵn trên board)
+IO_LOC "en_n"         36;
+IO_PORT "en_n"        PULL_MODE=UP IO_TYPE=LVCMOS33;
+
+// LED D3 = WDO fault indicator (IOR17A = pin 27)
+IO_LOC "wdo_led_n"    27;
+IO_PORT "wdo_led_n"   PULL_MODE=NONE IO_TYPE=LVCMOS33;
+
+// LED D4 = ENOUT indicator (IOR15B = pin 28)
+IO_LOC "enout_led_n"  28;
+IO_PORT "enout_led_n" PULL_MODE=NONE IO_TYPE=LVCMOS33;
+
+// UART RX (pin 33, đã xác nhận hoạt động)
+IO_LOC "uart_rx"      33;
+IO_PORT "uart_rx"     PULL_MODE=UP IO_TYPE=LVCMOS33;
+
+// UART TX (pin 34, đã xác nhận hoạt động)
+IO_LOC "uart_tx"      34;
+IO_PORT "uart_tx"     PULL_MODE=NONE IO_TYPE=LVCMOS33;

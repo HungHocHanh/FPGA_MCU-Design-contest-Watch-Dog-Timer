@@ -1,0 +1,29 @@
+# Gowin EDA build files
+*.fs
+*.bin
+*.log
+*.rpt
+*.gprj
+*.gprj.user
+impl/
+project/
+
+# ModelSim
+work/
+transcript
+*.wlf
+*.vvp
+*.vcd
+
+# Python
+__pycache__/
+*.pyc
+
+# Temp/docs
+~$*
+*.txt
+extract.py
+
+# OS
+.DS_Store
+Thumbs.db
