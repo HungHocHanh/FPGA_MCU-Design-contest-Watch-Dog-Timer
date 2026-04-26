@@ -1,5 +1,6 @@
 module top (
     input wire clk,
+    input wire rst_n,
     input wire wdi_n,
     input wire en_n,
     output wire wdo_led_n,
@@ -7,13 +8,6 @@ module top (
     input wire uart_rx,
     output wire uart_tx
 );
-
-    // Initial reset mechanism
-    reg [7:0] rst_cnt = 0;
-    wire rst_n = (rst_cnt == 8'hFF);
-    always @(posedge clk) begin
-        if (!rst_n) rst_cnt <= rst_cnt + 8'd1;
-    end
 
     wire [7:0] rx_data, tx_data;
     wire rx_valid, tx_valid, tx_ready;
