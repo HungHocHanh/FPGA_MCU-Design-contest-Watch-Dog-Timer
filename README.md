@@ -296,10 +296,24 @@ python uart_test.py --port COM9 --test 7 8
 
 ## Kịch bản test
 
+### Tính toán giá trị timer
 
+Công thức tính toán giá trị các bộ đếm (timer) dựa trên tần số xung nhịp hệ thống (System Clock) là $F_{clk} = 27 \text{ MHz}$.
+
+- **Tần số System Clock:** $27 \text{ MHz} \Rightarrow 27,000,000$ chu kỳ/giây.
+- **1 mili-giây (ms)** tương ứng với: $27,000,000 / 1000 = 27,000$ chu kỳ clock.
+- **1 micro-giây (µs)** tương ứng với: $27,000,000 / 1,000,000 = 27$ chu kỳ clock.
+
+Do đó, các giá trị mặc định được tính như sau:
+1. **Thời gian chờ Arming (`arm_delay_us` = 150 µs):**
+   - $150 \times 27 = \textbf{4,050}$ chu kỳ. (Giá trị đếm từ 4050 về 0)
+2. **Thời gian Watchdog (`tWD_ms` = 1600 ms):**
+   - $1600 \times 27,000 = \textbf{43,200,000}$ chu kỳ.
+3. **Thời gian Reset/Fault (`tRST_ms` = 200 ms):**
+   - $200 \times 27,000 = \textbf{5,400,000}$ chu kỳ.
+   
 ### A. Test mô phỏng (ModelSim)
 
-Dưới đây là các kịch bản test trên môi trường mô phỏng (dựa theo file `ALL TEST WDG.docx`).
 
 #### Test 1: Sau reset
 - **Hành động:** Sau reset ở trạng thái Idle (State = 0), watchdog chuyển sang trạng thái Arming (State = 1).
@@ -359,6 +373,17 @@ Khi Timer đếm xuống 0 sẽ chuyển sang trạng thái RUNNING, tín hiệu
 | 10 | UART Kick | `kick()` liên tục | D3 tắt |
 | 11 | CLR_FAULT | `write_reg(0x00, 0x05)` | Xóa FAULT, D3 tắt |
 | 12 | Timing | `write_reg(0x04, 500)` | D3 nhấp nháy nhanh hơn |
+
+---
+
+## Thiết kế ngõ ra WDO
+
+Trong thiết kế hiện tại (file `top.v`), ngõ ra `WDO` được cấu hình theo dạng **Push-Pull** thay vì Open-Drain Emulation:
+```verilog
+// Sử dụng Push-Pull để điều khiển trực tiếp LED
+assign wdo_led_n = ~wdo_val;
+```
+Thiết kế sử dụng Push-Pull nhằm cấp dòng điện trực tiếp giúp điều khiển đèn LED hiển thị lỗi trên board Kiwi 1P5 mà không cần mắc thêm điện trở kéo (pull-up resistor) bên ngoài.
 
 ---
 
