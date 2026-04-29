@@ -1,9 +1,9 @@
-# ⏱️ FPGA Watchdog Timer — Kiwi 1P5
+#  FPGA Watchdog Timer — Kiwi 1P5
 
 > **Cuộc thi thiết kế FPGA/MCU 2026** — Bài thi Watchdog Monitor  
 > Board: **Kiwi 1P5** (Gowin GW1N-UV1P5QN48)
 
-## 📋 Mục lục
+##  Mục lục
 
 - [Tổng quan](#tổng-quan)
 - [Sơ đồ khối](#sơ-đồ-khối)
@@ -253,10 +253,6 @@ RX: 55 01 04 00 05               (ACK)
 ### Mô phỏng (ModelSim / Icarus Verilog)
 
 ```bash
-# Icarus Verilog
-iverilog -o tb_top.vvp tb_top.v rtl/*.v
-vvp tb_top.vvp
-
 # ModelSim
 vsim -do sim.do
 ```
@@ -277,7 +273,7 @@ pip install pyserial
 import serial.tools.list_ports
 for p in serial.tools.list_ports.comports():
     print(p.device, p.description)
-# Tìm cổng "GWU2U" → đó là UART
+# Tìm cổng "GWU2U" 
 ```
 
 ### Chạy test
@@ -300,29 +296,8 @@ python uart_test.py --port COM9 --test 7 8
 
 ## Kịch bản test
 
-### A. Test phần cứng (nút nhấn + LED)
 
-| # | Tên | Hành động | Kết quả mong đợi |
-|---|---|---|---|
-| 1 | Power-on | Nạp FPGA, không nhấn gì | D4 sáng, D3 sáng sau ~1.6s |
-| 2 | Kick | Nhấn+nhả S1 mỗi <1.6s | D3 tắt, D4 sáng |
-| 3 | Timeout | Không kick >1.6s | D3 sáng (FAULT), tắt sau 0.2s |
-| 4 | Disable | Nhấn giữ S2 | Cả 2 LED tắt |
-| 5 | Kick trong FAULT | Nhấn S1 khi D3 sáng | D3 vẫn sáng (kick bị bỏ qua) |
-| 6 | Disable xóa FAULT | Giữ S2 khi FAULT | FAULT bị xóa, 2 LED tắt |
-
-### B. Test UART (Python)
-
-| # | Tên | Lệnh | Kết quả mong đợi |
-|---|---|---|---|
-| 7 | Đọc default | `read_reg(0x04)` | tWD = 1600 |
-| 8 | Ghi/Đọc | `write_reg(0x04, 3000)` → `read_reg(0x04)` | Đọc lại = 3000 |
-| 9 | EN_SW | `write_reg(0x00, 0x01)` | D4 sáng (enable qua UART) |
-| 10 | UART Kick | `kick()` liên tục | D3 tắt |
-| 11 | CLR_FAULT | `write_reg(0x00, 0x05)` | Xóa FAULT, D3 tắt |
-| 12 | Timing | `write_reg(0x04, 500)` | D3 nhấp nháy nhanh hơn |
-
-### C. Test mô phỏng (ModelSim)
+### A. Test mô phỏng (ModelSim)
 
 Dưới đây là các kịch bản test trên môi trường mô phỏng (dựa theo file `ALL TEST WDG.docx`).
 
@@ -362,6 +337,28 @@ Khi Timer đếm xuống 0 sẽ chuyển sang trạng thái RUNNING, tín hiệu
 ![Test 6 - IDLE](assets/image10.png)
 - **Phục hồi:** Sau khi nhả nút 10ms, WDG lại hoạt động bình thường, chuyển sang trạng thái ARMING sau đó sang RUNNING, `en_out` được bật lên.
 ![Test 6 - Phục hồi](assets/image11.png)
+
+### B. Test phần cứng (nút nhấn + LED)
+
+| # | Tên | Hành động | Kết quả mong đợi |
+|---|---|---|---|
+| 1 | Power-on | Nạp FPGA, không nhấn gì | D4 sáng, D3 sáng sau ~1.6s |
+| 2 | Kick | Nhấn+nhả S1 mỗi <1.6s | D3 tắt, D4 sáng |
+| 3 | Timeout | Không kick >1.6s | D3 sáng (FAULT), tắt sau 0.2s |
+| 4 | Disable | Nhấn giữ S2 | Cả 2 LED tắt |
+| 5 | Kick trong FAULT | Nhấn S1 khi D3 sáng | D3 vẫn sáng (kick bị bỏ qua) |
+| 6 | Disable xóa FAULT | Giữ S2 khi FAULT | FAULT bị xóa, 2 LED tắt |
+
+### C. Test UART (Python)
+
+| # | Tên | Lệnh | Kết quả mong đợi |
+|---|---|---|---|
+| 7 | Đọc default | `read_reg(0x04)` | tWD = 1600 |
+| 8 | Ghi/Đọc | `write_reg(0x04, 3000)` → `read_reg(0x04)` | Đọc lại = 3000 |
+| 9 | EN_SW | `write_reg(0x00, 0x01)` | D4 sáng (enable qua UART) |
+| 10 | UART Kick | `kick()` liên tục | D3 tắt |
+| 11 | CLR_FAULT | `write_reg(0x00, 0x05)` | Xóa FAULT, D3 tắt |
+| 12 | Timing | `write_reg(0x04, 500)` | D3 nhấp nháy nhanh hơn |
 
 ---
 
