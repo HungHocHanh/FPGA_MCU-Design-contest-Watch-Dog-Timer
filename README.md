@@ -322,6 +322,41 @@ python uart_test.py --port COM9 --test 7 8
 | 11 | CLR_FAULT | `write_reg(0x00, 0x05)` | Xóa FAULT, D3 tắt |
 | 12 | Timing | `write_reg(0x04, 500)` | D3 nhấp nháy nhanh hơn |
 
+### C. Test mô phỏng (ModelSim)
+
+Dưới đây là các kịch bản test trên môi trường mô phỏng (dựa theo file `ALL TEST WDG.docx`).
+
+#### Test 1: Sau reset
+- **Hành động:** Sau reset ở trạng thái Idle (State = 0), watchdog chuyển sang trạng thái Arming (State = 1).
+- **Kết quả:** Ở trạng thái Arming, bộ đếm đếm từ 4050. Khi Timer đếm xuống 0 sẽ chuyển sang trạng thái RUNNING, tín hiệu `en_out` được bật lên 1.
+> **[Chèn ảnh mô phỏng Test 1 tại đây]**
+
+#### Test 2: Có kick khi ở trạng thái RUNNING
+- **Hành động:** Nút `wdi` được nhấn rồi nhả. Sau khi nhả, đợi khoảng debounce 10ms, hệ thống sẽ kích tín hiệu `kick`.
+- **Kết quả:** Ở sườn xuống của tín hiệu `kick`, timer được reset và lặp lại chu trình đếm `tWD = 43_200_000`.
+> **[Chèn ảnh mô phỏng Test 2 tại đây]**
+
+#### Test 3: Không có kick
+- **Hành động:** Khi không có tín hiệu kick, timer đếm về 0.
+- **Kết quả:** Sau đó chuyển sang trạng thái FAULT (State = 3), đèn `wdo` sáng lên (từ 0 -> 1), `fault_active` cũng từ 0 -> 1. Timer được reset về `5_400_000` (tRST).
+> **[Chèn ảnh mô phỏng Test 3 tại đây]**
+
+#### Test 4: Có kick trong trạng thái FAULT
+- **Hành động:** Gửi tín hiệu `kick` khi hệ thống đang ở trạng thái FAULT.
+- **Kết quả:** Timer không bị reset, trạng thái không đổi (vẫn ở FAULT), LED `wdo` vẫn sáng. Tín hiệu `kick` không có tác dụng.
+> **[Chèn ảnh mô phỏng Test 4 tại đây]**
+
+#### Test 5: Đang ở trạng thái FAULT chờ hết tRST
+- **Hành động:** Bộ đếm thời gian reset (tRST) đếm về 0.
+- **Kết quả:** Ngay tại xung clock tiếp theo, watchdog timer quay lại trạng thái RUNNING, LED `wdo` và `fault_active` bị đưa về 0. Timer được đặt lại về `43_200_000`.
+> **[Chèn ảnh mô phỏng Test 5 tại đây]**
+
+#### Test 6: Nhấn nút EN
+- **Hành động:** Nhấn nút `en`.
+- **Kết quả:** Sau thời gian debounce 10ms, WDG bị đưa về trạng thái IDLE, tín hiệu `en` xuống 0 (WDG không hoạt động), `en_out` cũng bị đưa xuống 0.
+- **Phục hồi:** Sau khi nhả nút 10ms, WDG lại hoạt động bình thường, chuyển sang trạng thái ARMING sau đó sang RUNNING, `en_out` được bật lên.
+> **[Chèn ảnh mô phỏng Test 6 tại đây]**
+
 ---
 
 ## Thông số mặc định
