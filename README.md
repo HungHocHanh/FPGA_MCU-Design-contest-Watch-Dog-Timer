@@ -38,25 +38,7 @@ Watchdog Timer là mạch giám sát hoạt động của hệ thống. Nếu h�
 
 ## Sơ đồ khối
 
-```
-                        ┌─────────────────────────────────────────────┐
-                        │                  top.v                      │
-                        │                                             │
-  S1 (WDI) ──┤btn├──▶  sync_debounce  ──▶ kick ──┐                   │
-                        │                         │                   │
-  S2 (EN)  ──┤btn├──▶  sync_debounce  ──▶ en   ──┤                   │
-                        │                         ▼                   │
-                        │                 ┌──────────────┐            │
-  USB-UART ──▶ uart_rx ──▶ uart_frame  ──▶│              │            │
-  (9600)       (pin 33)    _parser      ──▶│ watchdog     │──▶ D3 (WDO)
-                        │              ┌──▶│   _core      │──▶ D4 (ENOUT)
-               uart_tx ◀── (response)  │  │              │            │
-               (pin 34)               │  └──────────────┘            │
-                        │              │         ▲                    │
-                        │         regfile ◀──────┘                    │
-                        │        (5 registers)                        │
-                        └─────────────────────────────────────────────┘
-```
+![Sơ đồ khối](assets/module_view.jpg)
 
 ---
 
@@ -90,13 +72,7 @@ Watch_dog_timer/
 
 Máy trạng thái 4 trạng thái:
 
-```
-        EN=1              arm_delay hết         timeout (tWD)
-IDLE ────────▶ ARMING ──────────────▶ RUNNING ──────────────▶ FAULT
-  ▲              │                      │  ▲                   │
-  │   EN=0       │  EN=0                │  │ kick              │ tRST hết
-  │◀─────────────┘◀─────────────────────┘  └───────────────────┘
-```
+![FSM](assets/fsm.jpg)
 
 | Trạng thái | WDO_N | ENOUT | Mô tả |
 |---|---|---|---|
