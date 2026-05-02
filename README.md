@@ -46,6 +46,8 @@ Watchdog Timer là mạch giám sát hoạt động của hệ thống. Nếu h�
 
 ```
 Watch_dog_timer/
+├── Physical Constraints Files/ # Pin constraints cho Gowin EDA
+│   └── kiwi1p5.cst             # Pin constraints
 ├── rtl/                        # RTL source code
 │   ├── top.v                   # Top-level module (kết nối tất cả)
 │   ├── watchdog_core.v         # FSM chính (IDLE/ARMING/RUNNING/FAULT)
@@ -54,13 +56,13 @@ Watch_dog_timer/
 │   ├── uart_frame_parser.v     # Decode frame + XOR checksum + response
 │   ├── regfile.v               # Register file (CTRL/tWD/tRST/arm_delay/STATUS)
 │   └── sync_debounce.v         # 2-FF synchronizer + debounce nút nhấn
-├── tb_top.v                    # Testbench (5 test cases)
-├── sim.do                      # ModelSim script
-├── kiwi1p5.cst                 # Pin constraints cho Gowin EDA
-├── kiwi1p5.sdc                 # Timing constraints (27MHz clock)
-├── test_uart.py                # Python script test UART
-├── uart_test.py                # Python script test UART (full, interactive)
-├── uart_debug.py               # Python script debug UART
+├── Testbench/                  # Testbench & Simulation files
+│   ├── sim.do                  # ModelSim script
+│   └── tb_top.v                # Testbench (5 test cases)
+├── Timing Contraints Files/    # Timing constraints
+│   └── kiwi1p5.sdc             # Timing constraints (27MHz clock)
+├── Uart Python/                # Python scripts test UART
+│   └── uart_test.py            # Python script test UART (full, interactive)
 └── README.md                   # File này
 ```
 
