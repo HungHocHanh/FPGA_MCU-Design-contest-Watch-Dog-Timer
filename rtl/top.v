@@ -83,8 +83,8 @@ module top (
         .fault_active(fault_act)
     );
 
-    // Output mapping to LEDs (active-high: 1 = sáng, 0 = tắt)
-    assign wdo_led_n = ~wdo_val;    // D3: sáng khi FAULT
-    assign enout_led_n = enout_val; // D4: sáng khi RUNNING/FAULT
+    // Output mapping to LEDs 
+    assign wdo_led_n = ~wdo_val;    // D3: on when FAULT
+    assign enout_led_n = enout_val; // D4: on when RUNNING/FAULT
 
 endmodule
