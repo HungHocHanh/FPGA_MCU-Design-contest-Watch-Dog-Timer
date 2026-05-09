@@ -4,14 +4,14 @@ module sync_debounce #(
 ) (
     input  wire clk, rst_n,
     input  wire btn_n,       // Active-low từ board
-    output reg  btn_clean,   // 1 = đang nhấn (sau debounce)
-    output reg  btn_fall     // Pulse 1 clock khi falling edge
+    output reg  btn_clean,   
+    output reg  btn_fall     
 );
     localparam CNT_MAX = CLK_HZ / 1000 * DEBOUNCE_MS;
     reg [1:0]  sync_ff;
     reg [$clog2(CNT_MAX+1)-1:0] cnt;
     reg prev;
-    wire btn_sync = ~sync_ff[1]; // Đảo vì active-low
+    wire btn_sync = ~sync_ff[1]; 
 
     always @(posedge clk or negedge rst_n)
         if (!rst_n) sync_ff <= 2'b00;
@@ -26,7 +26,7 @@ module sync_debounce #(
                 if (cnt >= CNT_MAX-1) begin
                     prev      <= btn_sync;
                     btn_clean <= btn_sync;
-                    btn_fall  <= (~btn_sync);  // falling = released → 0
+                    btn_fall  <= (~btn_sync); 
                     cnt       <= 0;
                 end
             end else cnt <= 0;
